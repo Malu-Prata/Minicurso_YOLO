@@ -1,0 +1,48 @@
+##Configuração da GPU do Google Colab 
+  import tensorflow as tf
+  device_name = tf.test.gpu_device_name()
+  print(device_name)
+
+##Instalação do DarkNet
+  !git clone https://github.com/AlexeyAB/darknet
+
+##Verifica se deu tudo certo com a instalação 
+  ls
+
+##Muda o diretório pra ser usado o darknet
+  cd darknet
+
+##Lista o que tem dentro do Darknet
+  ls
+
+## Parte 2- Compila a biblioteca com base na Pasta que está sendo acessada, para construir o framework para utilização - demora uns 2 minutos 
+
+  !sed -i 's/OPENCV=0/OPENCV=1/' Makefile
+  !sed -i 's/GPU=0/GPU=1/' Makefile
+  !sed -i 's/CUDNN=0/CUDNN=1/' Makefile
+
+  !make
+
+## Parte 3- Baixa os pesos do modelo pré-treinado
+
+  !wget https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.weights
+
+##4- Testa o detector
+
+  !./darknet detect cfg/yolov4.cfg yolov4.weights data/giraffe.jpg //da pra mudar o giraffe por qualquer outra imagem carregada no dataset 
+
+##5- Visualização do resultado
+
+  import cv2
+  import matplotlib.pyplot as plt
+  def mostrar (frame):
+    imagem = cv2.imread(frame)
+    fig = plt.gcf() #função que chama uma figura do matplotlib
+    fig.set_size_inches(18,10) #tamanho que vai ser gerada a saída
+    plt.axis('off') #retira do formato padrão do matplotlib (como um plano cartesiano)
+    plt.imshow(cv2.cvtColor(imagem, cv2.COLOR_BGR2RGB))
+    plt.show()
+
+  mostrar('predictions.jpg')
+
+    
