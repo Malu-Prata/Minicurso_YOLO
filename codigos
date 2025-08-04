@@ -1,58 +1,39 @@
-##Configuração da GPU do Google Colab 
-  import tensorflow as tf
-  device_name = tf.test.gpu_device_name()
-  print(device_name)
+# --- IMPORTAÇÕES ---
+from google.colab import files         # Para fazer upload dos arquivos no Colab
+from ultralytics import YOLO            # Biblioteca YOLOv8
+import matplotlib.pyplot as plt         # Para mostrar imagens
+import matplotlib.image as mpimg        # Para carregar imagens
 
-##Instalação do DarkNet
-  !git clone https://github.com/AlexeyAB/darknet
+# --- UPLOAD DAS IMAGENS ---
+uploaded = files.upload()               # Janela para selecionar e enviar uma ou mais imagens
 
-##Verifica se deu tudo certo com a instalação 
-  ls
+# --- MOSTRA QUAIS ARQUIVOS FORAM ENVIADOS ---
+print("Arquivos enviados:")
+for filename in uploaded.keys():
+    print(f"- {filename}")
 
-##Muda o diretório pra ser usado o darknet
-  cd darknet
+# --- ESCOLHA DA IMAGEM PELO NOME ---
+img_name = input("Digite o nome exato da imagem que deseja processar: ")
 
-##Lista o que tem dentro do Darknet
-  ls
+# --- VERIFICA SE A IMAGEM ESTÁ ENTRE OS ENVIADOS ---
+if img_name not in uploaded:
+    print("Erro: imagem não encontrada! Confira o nome e tente novamente.")
+else:
+    # --- CARREGA O MODELO YOLOv8 ---
+    model = YOLO('yolov8n.pt')
 
-## Parte 2- Compila a biblioteca com base na Pasta que está sendo acessada, para construir o framework para utilização - demora uns 2 minutos 
+    # --- EXECUTA A DETECÇÃO NA IMAGEM ESCOLHIDA ---
+    results = model(img_name)
 
-  !sed -i 's/OPENCV=0/OPENCV=1/' Makefile
-  !sed -i 's/GPU=0/GPU=1/' Makefile
-  !sed -i 's/CUDNN=0/CUDNN=1/' Makefile
-
-  !make
-
-## Parte 3- Baixa os pesos do modelo pré-treinado
-
-  !wget https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.weights
-
-##4- Testa o detector
-
-  !./darknet detect cfg/yolov4.cfg yolov4.weights data/giraffe.jpg //da pra mudar o giraffe por qualquer outra imagem carregada no dataset 
-
-##5- Visualização do resultado
-
-  import cv2
-  import matplotlib.pyplot as plt
-  def mostrar (frame):
-    imagem = cv2.imread(frame)
-    fig = plt.gcf() #função que chama uma figura do matplotlib
-    fig.set_size_inches(18,10) #tamanho que vai ser gerada a saída
-    plt.axis('off') #retira do formato padrão do matplotlib (como um plano cartesiano)
-    plt.imshow(cv2.cvtColor(imagem, cv2.COLOR_BGR2RGB))
+    # --- MOSTRA A IMAGEM ORIGINAL ---
+    imagem = mpimg.imread(img_name)
+    plt.imshow(imagem)
+    plt.title(f"Imagem Original: {img_name}")
+    plt.axis('off')
     plt.show()
 
-  mostrar('predictions.jpg')
-
-    
-//----------------------------------------------------------------------//
-
-##Se quiser usar sua própria imagem 
-from google.colab import files
-uploaded = files.upload()
-
-##Testanto
-!./darknet detect cfg/yolov4.cfg yolov4.weights nomedaimagem.jpeg
-
-
+    # --- MOSTRA A IMAGEM COM AS CAIXAS DE DETECÇÃO ---
+    plt.imshow(results[0].plot())
+    plt.title(f"Detecções: {img_name}")
+    plt.axis('off')
+    plt.show()
