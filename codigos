@@ -1,5 +1,9 @@
 ##--CONFIGURAR AMBIENTE DE EXECUÇÃO PRA GPU--##
 
+
+##--- INSTALANDO ULTRALYTICS--- ##
+!pip install ultralytics
+
 # --- IMPORTAÇÕES ---
 from google.colab import files         # Para fazer upload dos arquivos no Colab
 from ultralytics import YOLO            # Biblioteca YOLOv8
