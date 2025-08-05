@@ -180,6 +180,15 @@ def draw_annotations_on_transparent_bg(detection_result: Results) -> Image.Image
 
 
 ### COMEÇA A CAPTURAR VÍDEO ###
+def js_response_to_image(js_response):
+    """
+    Converts the JavaScript response containing base64 image data to a PIL Image object.
+    """
+    img_data = js_response['img']
+    header, encoded = img_data.split(',', 1)
+    data = b64decode(encoded)
+    return Image.open(io.BytesIO(data))
+
 start_stream()
 img_data = ''
 while True:
